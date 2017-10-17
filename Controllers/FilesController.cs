@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace CamList.Controllers
 {
@@ -13,7 +15,15 @@ namespace CamList.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "file1", "file2" };
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            var Configuration = builder.Build();
+
+            var files = Directory.GetFiles(Configuration["Indoor"]);
+            return files ;
         }
 
         // GET api/values/5
