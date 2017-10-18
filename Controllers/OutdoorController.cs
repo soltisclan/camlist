@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using Microsoft.Extensions.Configuration;
+using CamList.Models;
+using Newtonsoft.Json;
 
 namespace CamList.Controllers
 {
@@ -13,7 +15,7 @@ namespace CamList.Controllers
     {
         // GET api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Video> Get()
         {
 
             var builder = new ConfigurationBuilder()
@@ -24,19 +26,22 @@ namespace CamList.Controllers
 
             var days = Directory.GetDirectories(Configuration["BasePath"] + "Amcrest\\Outdoor\\AMC0200KBE29V0X8B2");
 
-            var files = new List<string>();
+            var videos = new List<Video>();
 
             foreach (string day in days) {
                 var hours = Directory.GetDirectories(day + "\\001\\dav");
                 foreach (string hour in hours) {
                     var tmpFiles = Directory.GetFiles(hour);            
                     foreach (string file in tmpFiles) {
-                        if (file.Substring(file.Length-4,4) == ".mp4")
-                        files.Add(file);
+                        if (file.Substring(file.Length-4,4) == ".mp4") {
+                            var video = new Video(file);
+                            videos.Add(video);
+                        }
                     }
                 }
             }
-            return files.ToArray();
+
+            return videos;
         }
 
         // GET api/values/5
