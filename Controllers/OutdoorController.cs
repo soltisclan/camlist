@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 namespace CamList.Controllers
 {
     [Route("api/[controller]")]
-    public class FilesController : Controller
+    public class OutdoorController : Controller
     {
         // GET api/values
         [HttpGet]
@@ -22,8 +22,21 @@ namespace CamList.Controllers
 
             var Configuration = builder.Build();
 
-            var files = Directory.GetFiles(Configuration["Indoor"]);
-            return files ;
+            var days = Directory.GetDirectories(Configuration["BasePath"] + "Amcrest\\Outdoor\\AMC0200KBE29V0X8B2");
+
+            var files = new List<string>();
+
+            foreach (string day in days) {
+                var hours = Directory.GetDirectories(day + "\\001\\dav");
+                foreach (string hour in hours) {
+                    var tmpFiles = Directory.GetFiles(hour);            
+                    foreach (string file in tmpFiles) {
+                        if (file.Substring(file.Length-4,4) == ".mp4")
+                        files.Add(file);
+                    }
+                }
+            }
+            return files.ToArray();
         }
 
         // GET api/values/5
